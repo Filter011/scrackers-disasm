@@ -832,10 +832,16 @@ FinishTrackUpdate:
 		ld	(ix+zTrack.DurationTimeout),a
 		bit	Do_not_attack,(ix+zTrack.PlaybackControl)
 		ret	nz
+	if OptimiseDriver=2
+		ld	(ix+zTrack.ModEnvIndex),0
+		ld	(ix+zTrack.ModEnvSens),0
+		ld	(ix+zTrack.VolEnv),0
+	else
 		xor	a
 		ld	(ix+zTrack.ModEnvIndex),a
 		ld	(ix+zTrack.ModEnvSens),a
 		ld	(ix+zTrack.VolEnv),a
+	endif
 
 		ld	a,(ix+zTrack.NoteFillMaster)
 		ld	(ix+zTrack.NoteFillTimeout),a
@@ -972,8 +978,12 @@ loc_341:
 ; ---------------------------------------------------------------------------
 
 loc_34C:
+	if OptimiseDriver=2
+		ld	(ix+zTrack.PanCtrlData),0
+	else
 		xor	a
 		ld	(ix+zTrack.PanCtrlData),a
+	endif
 ; End of function DoPanAnimation
 
 
@@ -1070,9 +1080,14 @@ PrepareModulat:
 		ld	a,(hl)
 		srl	a
 		ld	(de),a
+	if OptimiseDriver=2
+		ld	(ix+zTrack.ModulationValLow),0
+		ld	(ix+zTrack.ModulationValHigh),0
+	else
 		xor	a
 		ld	(ix+zTrack.ModulationValLow),a
 		ld	(ix+zTrack.ModulationValHigh),a
+	endif
 		ret
 ; End of function PrepareModulat
 
@@ -2041,7 +2056,7 @@ SilenceAll:
 	endif
 		push	bc
 		push	af
-		ld	b,3
+		ld	b,(zSongFM4-zSongFM1)/zTrack.len
 		ld	a,0B4h
 		ld	c,0
 
@@ -2055,7 +2070,7 @@ loc_88C:
 		pop	af
 		inc	a
 		djnz	loc_88C
-		ld	b,3
+		ld	b,(zSongPSG1-zSongFM4)/zTrack.len
 		ld	a,0B4h
 
 loc_898:
@@ -2069,7 +2084,7 @@ loc_898:
 		inc	a
 		djnz	loc_898
 		ld	c,0
-		ld	b,7
+		ld	b,(zSongPSG1-zSongFM1)/zTrack.len+1
 		ld	a,28h
 
 loc_8A6:
@@ -2931,8 +2946,12 @@ cfFC_PitchSlide:
 loc_D31:
 		res	Do_not_attack,(ix+zTrack.PlaybackControl)
 		res	Pitch_slide,(ix+zTrack.PlaybackControl)
+	if OptimiseDriver=2
+		ld	(ix+zTrack.Detune),0
+	else
 		xor	a
 		ld	(ix+zTrack.Detune),a
+	endif
 		ret
 ; ---------------------------------------------------------------------------
 
