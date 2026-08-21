@@ -189,7 +189,7 @@ EntryPoint:
 		move.l	(a5)+,(a4)
 		move.l	(a5)+,(a4)
 
-		moveq	#bytesToLcnt($80),d3
+		moveq	#($80)/4-1,d3
 
 .clearCRAM:
 		move.l	d0,(a3)
@@ -197,7 +197,7 @@ EntryPoint:
 
 		move.l	(a5)+,(a4)
 
-		moveq	#bytesToLcnt($50),d4
+		moveq	#($50)/4-1,d4
 
 .clearVSRAM:
 		move.l	d0,(a3)
@@ -220,7 +220,7 @@ EntryPoint:
 
 SetupValues:
 		dc.w $8000				; VDP register Start
-		dc.w bytesToLcnt(ram_end-ram_start)	; Repeat times for clearing 68k ram
+		dc.w (ram_end-ram_start)/4-1	; Repeat times for clearing 68k ram
 		dc.w $100				; VDP register Number increase (Used for Z80 functioning too)
 
 		dc.l z80_ram				; Z80 Ram start
@@ -318,7 +318,7 @@ GameProgram:
 		bne.s	loc_336
 
 loc_326:
-		moveq	#bytesToLcnt(ram_end-init_flag),d0
+		moveq	#(ram_end-init_flag)/4-1,d0
 		lea	(a0),a1
 
 loc_32A:
@@ -336,7 +336,7 @@ loc_336:
 		moveq	#0,d5
 		moveq	#0,d6
 		movea.w	d0,a2
-		move.w	#bytesToXcnt(init_flag-ram_start,$20),d7
+		move.w	#(init_flag-ram_start)/$20-1,d7
 
 .clearRAM:
 		movem.l	d0-d6/a2,-(a0)
@@ -345,7 +345,7 @@ loc_336:
 		lea	(unk_C800).w,a0
 		move.w	#$4EF9,d0			; machine code for 'jmp'
 		lea	RTS_code(pc),a1			; routine used here just has an 'rts'...
-		moveq	#bytesToXcnt(unk_C800_end-unk_C800,6),d7
+		moveq	#(unk_C800_end-unk_C800)/6-1,d7
 
 loc_360:
 		move.w	d0,(a0)+
@@ -353,7 +353,7 @@ loc_360:
 		dbf	d7,loc_360			; the result from this is 'jmp	RTS_code'
 
 		lea	RTE_code(pc),a1			; routine used here just has 'rte'...
-		moveq	#bytesToXcnt(int_list_end-int_list,6),d7
+		moveq	#(int_list_end-int_list)/6-1,d7
 
 loc_36E:
 		move.w	d0,(a0)+
@@ -374,9 +374,9 @@ loc_36E:
 		move.w	#$8F02,(vdp_control_port).l
 		move.w	#$8F02,(vdp_increment).w
 
-		moveq	#0,d0				; clear d0
+		moveq	#0,d0
 		writeVRAM				; set VDP in VRAM write mode
-		move.w	#bytesToXcnt($10000,$10),d1	; set repeat times
+		move.w	#($10000)/$10-1,d1		; set repeat times
 
 .clearVRAM:
 	rept 4
@@ -385,7 +385,7 @@ loc_36E:
 		dbf	d1,.clearVRAM			; repeat til VRAM is cleared
 
 		writeCRAM				; set VDP in CRAM write mode
-		move.w	#bytesToXcnt($80,$10),d1	; set repeat times
+		move.w	#($80)/$10-1,d1			; set repeat times
 
 .clearCRAM:
 	rept 4
@@ -394,7 +394,7 @@ loc_36E:
 		dbf	d1,.clearCRAM			; repeat til CRAM is cleared
 
 		writeVSRAM				; set VDP in VSRAM mode
-		move.w	#bytesToXcnt($50,$10),d1	; set repeat times
+		move.w	#($50)/$10-1,d1			; set repeat times
 
 .clearVSRAM:
 	rept 4
@@ -404,7 +404,7 @@ loc_36E:
 
 		lea	InitialVDPSetupArray(pc),a0	; load VDP setup values address to a0
 		jsr	(SetupVDPUsingTable).l
-		resetZ80				; reset the Z80
+		resetZ80
 		move.w	#$2000,sr			; set the stack register
 
 MAINPROGLOOP:
@@ -500,7 +500,7 @@ DMAValues_End:
 
 VDPSetup_02:
 		lea	(vdp_control_port).l,a4		; load VDP address port to a4
-		moveq	#0,d3				; clear d3
+		moveq	#0,d3
 		stopZ80
 		waitZ80
 		move.w	(vdp81_ctrl).w,d0
@@ -535,7 +535,7 @@ loc_506:
 		move.l	-(a1),d1
 		move.w	d1,(a4)
 		move.l	-(a1),d1
-		lsl.l	#1,d1				; this could be improved by using "add.l	d1,d1"
+		lsl.l	#1,d1
 		movea.l	d1,a2
 		move.w	(a2),vdp_data_port-vdp_control_port(a4)
 		addq.w	#8,a1
@@ -797,7 +797,7 @@ sub_76E:
 		lea	(pal).w,a0
 		lea	(unk_pal).w,a1
 		move.w	(word_D4EA).w,d2
-		move.w	#bytesToWcnt(pal_end-pal),d7
+		move.w	#(pal_end-pal)/2-1,d7
 
 loc_77E:
 		move.w	(a1)+,d0
@@ -826,7 +826,7 @@ loc_79E:
 		addi.w	#$200,(a0)
 
 loc_7B0:
-		adda.l	#2,a0				; this could be improved by using "addq.l	#2,a0"
+		adda.l	#2,a0
 		dbf	d7,loc_77E
 
 		subq.w	#2,(word_D4EA).w
@@ -958,7 +958,7 @@ loc_894:
 
 MapScreen:
 		lea	(vdp_data_port).l,a0		; load VDP data port to a0
-		moveq	#0,d6				; clear d6
+		moveq	#0,d6
 		move.w	(word_D820).w,d6		; load number of tiles to increase to for each set of columns to d6
 		swap	d6				; swap words (Sets it to left for long-word amount)
 
@@ -1012,7 +1012,7 @@ SetupVDPUsingTable:
 ; ---------------------------------------------------------------------------
 
 .finish:
-		lea	4(a1),a1			; this could be improved by using "addq.w	#4,a1"
+		lea	4(a1),a1
 		move.w	(a1)+,d0
 		lsl.w	#2,d0
 		lsl.w	#8,d0
@@ -1026,7 +1026,7 @@ SetupVDPUsingTable:
 		lsl.w	#8,d0
 		move.w	d0,(word_D818).w
 		move.w	(a1),d0
-		lsl.w	#1,d0				; this could be improved by using "add.w	d0,d0"
+		lsl.w	#1,d0
 		lsl.w	#8,d0
 		move.w	d0,(word_D81A).w
 		move.w	(word_C9D2).w,d0
@@ -1528,7 +1528,7 @@ locret_F20:
 
 ClearPLC:
 		lea	(plc_buffer).w,a1
-		moveq	#bytesToXcnt(plc_buffer_end-plc_buffer,6),d0
+		moveq	#(plc_buffer_end-plc_buffer)/6-1,d0
 
 .loop:
 		clr.l	(a1)+
@@ -1632,7 +1632,7 @@ locret_101E:
 
 ProcessDPLC_Pop:
 		lea	(plc_buffer).w,a0
-		moveq	#bytesToLcnt(plc_buffer_end-plc_buffer-6),d0
+		moveq	#(plc_buffer_end-plc_buffer-6)/4-1,d0
 
 loc_1026:
 		move.l	6(a0),(a0)+
@@ -2063,14 +2063,14 @@ sub_15D0:
 		move.l	d0,(a0)+
 		move.w	#$7FFF,(a0)+
 		lea	(unk_AD08&$FFFFFF).l,a0
-		move.w	#bytesToLcnt($1004),d1
+		move.w	#($1004)/4-1,d1
 
 loc_15EE:
 		move.l	d0,(a0)+
 		dbf	d1,loc_15EE
 
 		lea	(unk_AD08&$FFFFFF).l,a0
-		moveq	#bytesToXcnt($180,6),d7
+		moveq	#($180)/6-1,d7
 		move.w	a0,(word_D84C).w
 
 loc_1600:
@@ -2081,7 +2081,7 @@ loc_1600:
 
 		clr.w	-$40(a0)
 		lea	(spritetablebuffer).w,a0
-		moveq	#bytesToXcnt(spritetablebuffer_end-spritetablebuffer,8),d1
+		moveq	#(spritetablebuffer_end-spritetablebuffer)/8-1,d1
 
 loc_1616:
 		move.l	d0,(a0)+
@@ -2530,7 +2530,7 @@ loc_1946:
 		move.l	d7,obj.VRAM(a0)
 		move.l	d7,obj.Xpos(a0)
 		move.l	d7,obj.Ypos(a0)
-		movem.l	(sp)+,d7			; this could be improved by using "move.l	(sp)+,d7"
+		movem.l	(sp)+,d7
 		rts
 ; ===========================================================================
 
@@ -4237,7 +4237,7 @@ SegaScreen:
 		pea	(a0)
 		lea	Sega_VBlank(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		jsr	(SoundDriverLoad).l		; load the Z80 Sound Driver
 		lea	SegaScreen_VDPSettings(pc),a0
 		jsr	(SetupVDPUsingTable).w
@@ -4282,7 +4282,7 @@ SegaContin:
 		move.l	#$F01,d0
 		moveq	#1,d1
 		lea	(spritetablebuffer).w,a0
-		moveq	#bytesToXcnt($38,8),d7
+		moveq	#($38)/8-1,d7
 
 loc_64AA:
 		move.l	d0,(a0)+
@@ -4437,7 +4437,7 @@ Sega_GotoTitle:
 ; ---------------------------------------------------------------------------
 
 SegaScrn_CheckRegion:
-		move.b	(region_version).l,d0		; load Z80 version number
+		move.b	(region_version).l,d0		; load region version number
 		rol.b	#2,d0				; roll left 2 bits
 		andi.w	#2,d0				; get only the original 1st bit that was in version number
 		move.w	SegaTM_Palette(pc,d0.w),(pal+$1E).w ; color a specific part of the palette depending on if you have a domestic or overseas model
@@ -4705,10 +4705,10 @@ loc_67BC:
 
 Sega_MapTiles:
 		lea	(vdp_data_port).l,a3		; load VDP address to a3
-		moveq	#bytesToXcnt($200,tile_size),d7	; set repeat times
+		moveq	#($200)/tile_size-1,d7	; set repeat times
 		disable_ints				; set the stack register (Stopping VBlank)
 		writeVRAM $F0*tile_size,vdp_control_port-vdp_data_port(a3) ; set VDP to VRAM write mode
-		moveq	#0,d0				; clear d0
+		moveq	#0,d0
 
 ; this is to set the art in such a way that each tile represents 1 pixel on screen
 ; (Repeats for pixel values 0 to F)
@@ -4720,14 +4720,14 @@ DumpTileSizedPixel:
 		addi.l	#$11111111,d0			; increase all nybbles by 1
 		dbf	d7,DumpTileSizedPixel		; repeat 10 times
 
-		moveq	#0,d2				; clear d2
+		moveq	#0,d2
 		moveq	#$10-1,d7			; set d7 repeat times
 
 ; this is to set the art in such a way that each tile represents 1/4 of a pixel on screen
 ; (Repeats for pixel values 0 to F [x 4 as there are 4 pixels in 1 tile])
 
 loc_6860:
-		moveq	#0,d1				; clear d1
+		moveq	#0,d1
 		moveq	#$10-1,d6			; set d6 repeat times
 
 loc_6864:
@@ -4763,7 +4763,7 @@ loc_6864:
 		moveq	#4-1,d6				; set repeat times
 
 loc_68B8:
-		moveq	#bytesToXcnt($200,$10),d7
+		moveq	#($200)/$10-1,d7
 
 loc_68BA:
 		move.l	(a0)+,(a1)+
@@ -4782,7 +4782,7 @@ loc_68BA:
 		moveq	#$80-1,d6
 
 loc_68EE:
-		moveq	#bytesToLcnt($20),d7
+		moveq	#($20)/4-1,d7
 
 loc_68F0:
 		move.w	(a0)+,d0
@@ -5430,7 +5430,7 @@ TitleLoad:
 		pea	(a0)
 		lea	loc_7576(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		disable_ints
 		lea	TitleScreen_VDPSettings(pc),a0
 		jsr	(SetupVDPUsingTable).w
@@ -5500,7 +5500,7 @@ TitleLoad_Continue:
 		move.w	#$80,(word_D820).w
 		lea	PAL_MainMenus(pc),a0
 		lea	(pal).w,a1
-		moveq	#bytesToLcnt($40),d0
+		moveq	#($40)/4-1,d0
 
 .loadpalette:
 		move.l	(a0)+,(a1)+
@@ -5651,7 +5651,7 @@ Fields:
 		pea	(a0)
 		lea	Vint_Fields(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		lea	Fields_VDPSettings(pc),a0
 		jsr	(SetupVDPUsingTable).w
 		move.b	#bgm_Electoria,d0		; load BGM 81
@@ -5848,7 +5848,7 @@ loc_808A:
 		beq.w	loc_814C
 		moveq	#0,d0
 		lea	(word_F9C0).w,a0
-		move.w	#bytesToLcnt($600),d1
+		move.w	#($600)/4-1,d1
 
 loc_80B2:
 		move.l	d0,(a0)+
@@ -5857,21 +5857,21 @@ loc_80B2:
 		move.w	d0,(word_D830).w
 		move.w	d0,(word_D832).w
 		lea	(word_C9DE).w,a0
-		moveq	#bytesToLcnt($40),d1
+		moveq	#($40)/4-1,d1
 
 loc_80C6:
 		move.l	d0,(a0)+
 		dbf	d1,loc_80C6
 
 		lea	(word_CA1E).w,a0
-		moveq	#bytesToLcnt($40),d1
+		moveq	#($40)/4-1,d1
 
 loc_80D2:
 		move.l	d0,(a0)+
 		dbf	d1,loc_80D2
 
 		lea	(word_CA5E).w,a0
-		move.w	#bytesToLcnt(word_CA5E_end-word_CA5E),d1
+		move.w	#(word_CA5E_end-word_CA5E)/4-1,d1
 
 loc_80E0:
 		move.l	d0,(a0)+
@@ -5883,7 +5883,7 @@ loc_80E0:
 		move.w	#$8F02,(vdp_increment).w
 		moveq	#0,d0
 		writeVRAM
-		move.w	#bytesToXcnt($10000,16),d1
+		move.w	#($10000)/16-1,d1
 
 loc_810E:
 		move.l	d0,(a0)
@@ -6125,7 +6125,7 @@ loc_82DE:
 
 loc_8320:
 		lea	(word_CA5E).w,a0
-		move.w	#bytesToXcnt(word_CA5E_end-word_CA5E,8),d2
+		move.w	#(word_CA5E_end-word_CA5E)/8-1,d2
 
 loc_8328:
 		move.l	d0,(a0)+
@@ -6174,7 +6174,7 @@ loc_837C:
 		swap	d0
 		move.w	d1,d0
 		lea	(word_CA5E).w,a0
-		move.w	#bytesToLcnt(word_CA5E_end-word_CA5E),d1
+		move.w	#(word_CA5E_end-word_CA5E)/4-1,d1
 
 .loop:
 		move.l	d0,(a0)+
@@ -6558,7 +6558,7 @@ Levels:
 		pea	(a0)
 		lea	loc_8B1C(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		lea	Level_VDPSettings(pc),a0
 		jsr	(SetupVDPUsingTable).w
 		move.b	#bgm_Electoria,d0
@@ -6576,7 +6576,7 @@ loc_88C2:
 		jsr	(QueueSound).l
 		lea	PAL_PrimaryColours(pc),a1
 		lea	(pal).w,a0
-		moveq	#bytesToLcnt($40),d1
+		moveq	#($40)/4-1,d1
 
 loc_88D2:
 		move.l	(a1)+,(a0)+
@@ -6918,7 +6918,7 @@ sub_8CCE:
 		moveq	#0,d1
 		move.w	(worldnum).w,d1
 		andi.w	#1,d1
-		lsl.l	#1,d1				; this could be improved by using "add.l	d1,d1"
+		lsl.l	#1,d1
 		jmp	loc_8CDE(pc,d1.w)
 ; End of function sub_8CCE
 
@@ -6942,7 +6942,7 @@ loc_8CE4:
 		lea	(PAL_TechnoTowerZone).l,a1
 		adda.l	d0,a1
 		lea	(pal+$40).w,a0
-		move.b	#bytesToWcnt($40),d7
+		move.b	#($40)/2-1,d7
 
 .load:
 		move.w	(a1)+,(a0)+
@@ -6985,7 +6985,7 @@ LevelSelect_Init:
 		pea	(a0)
 		lea	loc_903C(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		disable_ints
 		moveq	#$3F,d0
 		moveq	#$3F,d1
@@ -7061,7 +7061,7 @@ loc_8F3A:
 		bcc.s	loc_8F84
 		moveq	#0,d0
 		writeVRAM vram_bg+$610
-		move.w	#bytesToLcnt($600),d1
+		move.w	#($600)/4-1,d1
 
 loc_8F50:
 		move.l	d0,(vdp_data_port).l
@@ -7084,7 +7084,7 @@ loc_8F50:
 loc_8F84:
 		moveq	#0,d0
 		writeVRAM vram_bg+$610
-		move.w	#bytesToLcnt($600),d1
+		move.w	#($600)/4-1,d1
 
 loc_8F94:
 		move.l	d0,(vdp_data_port).l
@@ -7245,7 +7245,7 @@ OptionSoundTest_Main:
 		pea	(a0)
 		lea	loc_94B4(pc),a0
 		move.l	a0,(v_int_addr).w
-		movem.l	(sp)+,a0			; this could be improved by using "movea.l	(sp)+,a0"
+		movem.l	(sp)+,a0
 		disable_ints
 		moveq	#$3F,d0
 		moveq	#$3F,d1
@@ -7254,7 +7254,7 @@ OptionSoundTest_Main:
 		jsr	(sub_86E).w
 		writeVRAM vram_fg+$420,d0
 		lea	OptionText(pc),a1
-		moveq	#bytesToWcnt(OptionText_End-OptionText),d1
+		moveq	#(OptionText_End-OptionText)/2-1,d1
 		moveq	#0,d2
 		move.w	#0,d3
 		jsr	(MapScreen).w
@@ -7644,7 +7644,7 @@ sub_97B4:
 		move.w	d0,$12(a1)
 		move.w	obj.Ypos(a0),d1
 		subi.w	#$80,d1
-		mulu.w	#2,d1				; this could be improved by using "add.w	d1,d1"
+		mulu.w	#2,d1
 		ext.l	d1
 		divu.w	#5,d1
 		move.w	d1,$10(a1)
@@ -7855,7 +7855,7 @@ loc_99CC:
 		lsr.w	#2,d1
 		andi.w	#$FFFC,d1
 		lea	dword_99F0(pc,d1.w),a3
-		moveq	#bytesToLcnt((dword_99F0_End-$130)-dword_99F0),d7
+		moveq	#((dword_99F0_End-$130)-dword_99F0)/4-1,d7
 
 loc_99E4:
 		move.w	d2,(a2)+
@@ -8303,7 +8303,7 @@ DecEniMapLocs:
 LoadLevelCollision:
 		movea.l	(a2)+,a1
 		lea	(col_primary&$FFFFFF).l,a2
-		moveq	#bytesToXcnt(col_primary_end-col_primary,8),d0
+		moveq	#(col_primary_end-col_primary)/8-1,d0
 
 loc_9DAC:
 		move.l	(a1)+,(a2)+
@@ -8311,7 +8311,7 @@ loc_9DAC:
 		dbf	d0,loc_9DAC
 
 		lea	(col_secondary&$FFFFFF).l,a2
-		moveq	#bytesToXcnt(col_secondary_end-col_secondary,8),d0
+		moveq	#(col_secondary_end-col_secondary)/8-1,d0
 
 loc_9DBC:
 		move.l	(a1)+,(a2)+
@@ -17509,7 +17509,7 @@ sub_EFD4:
 		move.l	#0,$24(a0)
 		lea	HUD_Elements(pc),a1
 		lea	(spritetable).w,a2
-		move.w	#bytesToWcnt(HUD_Elements_End-HUD_Elements),d0
+		move.w	#(HUD_Elements_End-HUD_Elements)/2-1,d0
 
 loc_EFF8:
 		move.w	(a1)+,(a2)+			; dump sprites
@@ -17699,7 +17699,7 @@ loc_F0DE:
 		jsr	(DMA_WriteData).w
 		writeVRAM $7F8*tile_size
 		move.l	#$DDDDDDDD,d0
-		moveq	#bytesToLcnt($100),d1
+		moveq	#($100)/4-1,d1
 
 loc_F106:
 		move.l	d0,(vdp_data_port).l
@@ -17855,7 +17855,7 @@ locret_F236:
 sub_F238:
 		move.l	a0,(lword_D8EC).w
 		lea	(unk_D8F2).w,a0
-		move.w	#bytesToXcnt(unk_D8F2_end-unk_D8F2,$10),d7
+		move.w	#(unk_D8F2_end-unk_D8F2)/$10-1,d7
 
 loc_F244:
 		move.w	#-1,(a0)+
@@ -18102,7 +18102,7 @@ loc_F43E:
 
 
 sub_F45C:
-		moveq	#bytesToXcnt(TitleCardBG_TileLocationArray_End-TitleCardBG_TileLocationArray,6),d7
+		moveq	#(TitleCardBG_TileLocationArray_End-TitleCardBG_TileLocationArray)/6-1,d7
 		lea	TitleCardBG_TileLocationArray(pc),a6
 
 loc_F462:
@@ -18392,7 +18392,7 @@ loc_F6CA:
 		move.w	#$8004,d2
 		move.w	(word_FDCA).w,d3
 		addq.w	#1,d3
-		lsl.w	#1,d3				; this could be improved by using "add.w	d3,d3"
+		lsl.w	#1,d3
 		add.w	(word_D816).w,d3
 		movem.w	d0/d3,-(sp)
 		jsr	(sub_86E).w
@@ -18421,7 +18421,7 @@ loc_F720:
 		moveq	#1,d0
 		moveq	#$28,d3
 		sub.w	(word_FDCC).w,d3
-		lsl.w	#1,d3				; this could be improved by using "add.w	d3,d3"
+		lsl.w	#1,d3
 		add.w	(word_D816).w,d3
 		moveq	#5,d1
 		move.w	#$8007,d2
@@ -18765,7 +18765,7 @@ Load_DMA_PLCs:
 ; ---------------------------------------------------------------------------
 
 DMA_PLC_Count:
-		dc.w bytesToXcnt(DMA_PLC_End-DMA_PLC,8)	; number of uncompressed art files to read
+		dc.w (DMA_PLC_End-DMA_PLC)/8-1	; number of uncompressed art files to read
 
 dmaPLCm:	macro vram,art,size
 		dc.w vram

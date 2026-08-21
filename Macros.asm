@@ -1,15 +1,3 @@
-; calculates initial loop counter value for a dbf loop
-; that writes n bytes total at 4 bytes per iteration
-bytesToLcnt function n,n>>2-1
-
-; calculates initial loop counter value for a dbf loop
-; that writes n bytes total at 2 bytes per iteration
-bytesToWcnt function n,n>>1-1
-
-; calculates initial loop counter value for a dbf loop
-; that writes n bytes total at x bytes per iteration
-bytesToXcnt function n,x,n/x-1
-
 ; ---------------------------------------------------------------------------
 ; Set a VRAM address via the VDP control port.
 ; input: 16-bit VRAM address, control port (default is (vdp_control_port).l)
@@ -44,7 +32,7 @@ writeVSRAM:	macro loc=0,controlport=(vdp_control_port).l
 
 FillRAM:	macro start,end
 		lea	(start).w,a1
-		move.w	#bytesToLcnt((end)-(start)),d1
+		move.w	#((end)-(start))/4-1,d1
 
 .loop:
 		move.l	d0,(a1)+
