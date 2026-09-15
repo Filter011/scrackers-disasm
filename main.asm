@@ -32,8 +32,8 @@ PaddingOptimization = 0|AllOptimizations
 	include "Constants.asm"
 
 ; ===========================================================================
-; Equates section - Names for RAM
-	include "RAM.asm"
+; Equates section - Names for Work RAM
+	include "WorkRAM.asm"
 
 ; ===========================================================================
 ; Include SMPS2ASM, for expressing SMPS bytecode in a portable and human-readable form.
