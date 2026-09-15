@@ -4,21 +4,21 @@
 Size_of_Snd_driver_guess:	equ $1216
 
 ; Clocks
-Master_Clock:    equ 53693175
-M68000_Clock:    equ Master_Clock/7
-Z80_Clock:       equ Master_Clock/15
-FM_Sample_Rate:  equ M68000_Clock/(6*6*4)
-PSG_Sample_Rate: equ Z80_Clock/16
+Master_Clock:    	equ 53693175
+M68000_Clock:    	equ Master_Clock/7
+Z80_Clock:       	equ Master_Clock/15
+FM_Sample_Rate:  	equ M68000_Clock/(6*6*4)
+PSG_Sample_Rate: 	equ Z80_Clock/16
 
 ; Universal VRAM addresses
-vram_window:	equ $B000
-vram_fg:	equ $C000
-vram_hscroll:	equ $D000
-vram_bg:	equ $E000
-vram_sprtbl:	equ $F000
+vram_win:		equ $B000
+vram_fg:		equ $C000
+vram_hscroll:		equ $D000
+vram_bg:		equ $E000
+vram_sprtbl:		equ $F000
 
 ; VRAM data
-tile_size:	equ 8*8/2
+tile_size:		equ 8*8/2
 plane_size_64x32:	equ 64*32*2
 
 ; ICD_BLK VRAM addresses
@@ -28,7 +28,7 @@ vram_hscroll_icd:	equ $DC00
 ; Sega Screen VRAM addresses
 vram_sprtbl_sega:	equ $B800
 vram_hscroll_sega:	equ $BC00
-vram_window_sega:	equ $F000
+vram_win_sega:		equ $F000
 
 ; Title Screen VRAM addresses
 vram_sprtbl_title:	equ $F800
@@ -37,7 +37,7 @@ vram_hscroll_title:	equ $FC00
 ; Field VRAM addresses
 vram_sprtbl_field:	equ $A800
 vram_hscroll_field:	equ $AC00
-vram_window_field:	equ $B000
+vram_win_field:		equ $B000
 
 ; Level VRAM addresses
 vram_hscroll_lvl:	equ $D000
@@ -48,55 +48,57 @@ vdp_control_port:	equ $C00004
 
 ; Z80 addresses
 z80_ram:		equ $A00000			; start of Z80 RAM
-z80_ram_end:	equ $A02000				; end of non-reserved Z80 RAM
-region_version:	equ $A10001
-port_1_data:	equ $A10003
-port_2_data:	equ	$A10005
-port_3_data:	equ	$A10007
-port_1_control:	equ $A10009
-port_2_control:	equ $A1000B
+z80_ram_end:		equ $A02000			; end of non-reserved Z80 RAM
+
+; I/O addresses
+region_version:		equ $A10001
+port_1_data:		equ $A10003
+port_2_data:		equ $A10005
+port_3_data:		equ $A10007
+port_1_control:		equ $A10009
+port_2_control:		equ $A1000B
 expansion_port_control:	equ $A1000D
 z80_bus_request:	equ $A11100
 z80_reset:		equ $A11200
-vdp_sega_lock:	equ $A14000
+vdp_sega_lock:		equ $A14000
 
-id_Sega:	equ ptr_GM_Sega-GameModeArray
-id_Title:	equ ptr_GM_Title-GameModeArray
-id_Field:	equ ptr_GM_Field-GameModeArray
-id_Level:	equ ptr_GM_Level-GameModeArray
-id_Null:	equ ptr_GM_Null-GameModeArray
-id_LevelSelect:	equ ptr_GM_LevelSelect-GameModeArray
-id_Options:	equ ptr_GM_Options-GameModeArray
+id_Sega:		equ ptr_GM_Sega-GameModeArray
+id_Title:		equ ptr_GM_Title-GameModeArray
+id_Field:		equ ptr_GM_Field-GameModeArray
+id_Level:		equ ptr_GM_Level-GameModeArray
+id_Null:		equ ptr_GM_Null-GameModeArray
+id_LevelSelect:		equ ptr_GM_LevelSelect-GameModeArray
+id_Options:		equ ptr_GM_Options-GameModeArray
 
 ; Colours
-cBlack:		equ $000				; colour black
-cWhite:		equ $EEE				; colour white
-cBlue:		equ $E00				; colour blue
-cGreen:		equ $0E0				; colour green
-cRed:		equ $00E				; colour red
-cYellow:	equ cGreen+cRed				; colour yellow
-cAqua:		equ cGreen+cBlue			; colour aqua
-cMagenta:	equ cBlue+cRed				; colour magenta
+cBlack:			equ $000				; colour black
+cWhite:			equ $EEE				; colour white
+cBlue:			equ $E00				; colour blue
+cGreen:			equ $0E0				; colour green
+cRed:			equ $00E				; colour red
+cYellow:		equ cGreen+cRed				; colour yellow
+cAqua:			equ cGreen+cBlue			; colour aqua
+cMagenta:		equ cBlue+cRed				; colour magenta
 
 ; Joypad input
-btnStart:	equ %10000000				; Start button	($80)
-btnA:		equ %01000000				; A		($40)
-btnC:		equ %00100000				; C		($20)
-btnB:		equ %00010000				; B		($10)
-btnR:		equ %00001000				; Right		($08)
-btnL:		equ %00000100				; Left		($04)
-btnDn:		equ %00000010				; Down		($02)
-btnUp:		equ %00000001				; Up		($01)
-btnDir:		equ %00001111				; Any direction	($0F)
-btnABC:		equ %01110000				; A, B or C	($70)
-bitStart:	equ 7
-bitA:		equ 6
-bitC:		equ 5
-bitB:		equ 4
-bitR:		equ 3
-bitL:		equ 2
-bitDn:		equ 1
-bitUp:		equ 0
+btnStart:		equ %10000000				; Start button	($80)
+btnA:			equ %01000000				; A		($40)
+btnC:			equ %00100000				; C		($20)
+btnB:			equ %00010000				; B		($10)
+btnR:			equ %00001000				; Right		($08)
+btnL:			equ %00000100				; Left		($04)
+btnDn:			equ %00000010				; Down		($02)
+btnUp:			equ %00000001				; Up		($01)
+btnDir:			equ %00001111				; Any direction	($0F)
+btnABC:			equ %01110000				; A, B or C	($70)
+bitStart:		equ 7
+bitA:			equ 6
+bitC:			equ 5
+bitB:			equ 4
+bitR:			equ 3
+bitL:			equ 2
+bitDn:			equ 1
+bitUp:			equ 0
 
 ; Object variables
 
@@ -107,27 +109,27 @@ bitUp:		equ 0
 ; bit 15 - priority
 
 obj	struct DOTS
-ID:		ds.w 1					; object ID (2 bytes)
-Unk2:		ds.b 2					; unknown (2 bytes)
-Unk4:		ds.w 1					; unknown (2 bytes)
-Pointer:	ds.w 1					; object pointer (2 bytes)
-Xpos:		ds.l 1					; x position (4 bytes)
-Ypos:		ds.l 1					; y position (4 bytes)
-Map:		ds.l 1					; mappings address (4 bytes)
-ScreenX:	ds.w 1					; fixed x position (2 bytes)
-ScreenY:	ds.w 1					; fixed y position (2 bytes)
-VelX:		ds.l 1					; x velocity (4 bytes)
-VelY:		ds.l 1					; y velocity (4 bytes)
-VRAM:		ds.w 1					; object VRAM location (2 bytes)
+ID:			ds.w 1					; object ID (2 bytes)
+Unk2:			ds.b 2					; unknown (2 bytes)
+Unk4:			ds.w 1					; unknown (2 bytes)
+Pointer:		ds.w 1					; object pointer (2 bytes)
+Xpos:			ds.l 1					; x position (4 bytes)
+Ypos:			ds.l 1					; y position (4 bytes)
+Map:			ds.l 1					; mappings address (4 bytes)
+ScreenX:		ds.w 1					; fixed x position (2 bytes)
+ScreenY:		ds.w 1					; fixed y position (2 bytes)
+VelX:			ds.l 1					; x velocity (4 bytes)
+VelY:			ds.l 1					; y velocity (4 bytes)
+VRAM:			ds.w 1					; object VRAM location (2 bytes)
 	ds.b 2
 
 HUDTime:
 	ds.b 2
 	ds.b 2
 	ds.b 2
-Angle:		ds.b 1
-		ds.b 1
-Inertia:	ds.w 1
+Angle:			ds.b 1
+			ds.b 1
+Inertia:		ds.w 1
 	endstruct
 
 ; -------------------------------------------------------------------------
@@ -142,87 +144,96 @@ Inertia:	ds.w 1
 ; F - Invalid
 
 ctrl struct DOTS
-type		ds.b 1
+type			ds.b 1
 	ds.b 2
-hold_6		ds.b 1
-hold_3		ds.b 1
-press_3		ds.b 1
-press_6		ds.b 1
-angle		ds.b 1
-var_8		ds.b 1
-var_9		ds.b 1
-var_A		ds.b 1
-var_B		ds.b 1
-var_C		ds.w 1
-var_E		ds.w 1
+hold_6			ds.b 1
+hold_3			ds.b 1
+press_3			ds.b 1
+press_6			ds.b 1
+angle			ds.b 1
+var_8			ds.b 1
+var_9			ds.b 1
+var_A			ds.b 1
+var_B			ds.b 1
+var_C			ds.w 1
+var_E			ds.w 1
 	endstruct
 
 mouse struct DOTS
 	ds.b 1
-orientation	ds.b 1
-buttons		ds.b 1
-x_high		ds.b 1
-x_low		ds.b 1
-y_high		ds.b 1
-y_low		ds.b 1
+orientation		ds.b 1
+buttons			ds.b 1
+x_high			ds.b 1
+x_low			ds.b 1
+y_high			ds.b 1
+y_low			ds.b 1
 	ds.b 9
 	endstruct
 
 ; Background music
-bgm_First:	equ $81
-bgm_Electoria:	equ ((ptr_mus81-MusicIndex)/2)+bgm_First
-bgm_Walkin:	equ ((ptr_mus82-MusicIndex)/2)+bgm_First
-bgm_HyperHyper:	equ ((ptr_mus83-MusicIndex)/2)+bgm_First
+bgm_First:		equ $81
+bgm_Electoria:		equ ((ptr_mus81-MusicIndex)/2)+bgm_First
+bgm_Walkin:		equ ((ptr_mus82-MusicIndex)/2)+bgm_First
+bgm_HyperHyper:		equ ((ptr_mus83-MusicIndex)/2)+bgm_First
 bgm_EveningStar:	equ ((ptr_mus84-MusicIndex)/2)+bgm_First
-bgm_Moonrise:	equ ((ptr_mus85-MusicIndex)/2)+bgm_First
-bgm_GameOver:	equ ((ptr_mus86-MusicIndex)/2)+bgm_First
-bgm_Last:	equ ((ptr_musend-MusicIndex)/2)+bgm_First
+bgm_Moonrise:		equ ((ptr_mus85-MusicIndex)/2)+bgm_First
+bgm_GameOver:		equ ((ptr_mus86-MusicIndex)/2)+bgm_First
+bgm_Last:		equ ((ptr_musend-MusicIndex)/2)+bgm_First
 
 ; Sound effects
-sfx_First:	equ $A0
-sfx_Jump:	equ ((ptr_sndA0-SoundIndex)/2)+sfx_First
-sfx_Cash:	equ ((ptr_sndA1-SoundIndex)/2)+sfx_First
-sfx_A2:		equ ((ptr_sndA2-SoundIndex)/2)+sfx_First
-sfx_Bomb:	equ ((ptr_sndA3-SoundIndex)/2)+sfx_First
-sfx_Skid:	equ ((ptr_sndA4-SoundIndex)/2)+sfx_First
-sfx_RingLoss:	equ ((ptr_sndA5-SoundIndex)/2)+sfx_First
-sfx_Ring:	equ ((ptr_sndA6-SoundIndex)/2)+sfx_First
-sfx_BreakItem:	equ ((ptr_sndA7-SoundIndex)/2)+sfx_First
-sfx_Spring:	equ ((ptr_sndA8-SoundIndex)/2)+sfx_First
-sfx_Lamppost:	equ ((ptr_sndA9-SoundIndex)/2)+sfx_First
-sfx_AA:		equ ((ptr_sndAA-SoundIndex)/2)+sfx_First
-sfx_AB:		equ ((ptr_sndAB-SoundIndex)/2)+sfx_First
-sfx_AC:		equ ((ptr_sndAC-SoundIndex)/2)+sfx_First
-sfx_AD:		equ ((ptr_sndAD-SoundIndex)/2)+sfx_First
-sfx_AE:		equ ((ptr_sndAE-SoundIndex)/2)+sfx_First
-sfx_AF:		equ ((ptr_sndAF-SoundIndex)/2)+sfx_First
-sfx_Last:	equ ((ptr_sndend-SoundIndex)/2)+sfx_First
+sfx_First:		equ $A0
+sfx_Jump:		equ ((ptr_sndA0-SoundIndex)/2)+sfx_First
+sfx_Cash:		equ ((ptr_sndA1-SoundIndex)/2)+sfx_First
+sfx_A2:			equ ((ptr_sndA2-SoundIndex)/2)+sfx_First
+sfx_Bomb:		equ ((ptr_sndA3-SoundIndex)/2)+sfx_First
+sfx_Skid:		equ ((ptr_sndA4-SoundIndex)/2)+sfx_First
+sfx_RingLoss:		equ ((ptr_sndA5-SoundIndex)/2)+sfx_First
+sfx_Ring:		equ ((ptr_sndA6-SoundIndex)/2)+sfx_First
+sfx_BreakItem:		equ ((ptr_sndA7-SoundIndex)/2)+sfx_First
+sfx_Spring:		equ ((ptr_sndA8-SoundIndex)/2)+sfx_First
+sfx_Lamppost:		equ ((ptr_sndA9-SoundIndex)/2)+sfx_First
+sfx_AA:			equ ((ptr_sndAA-SoundIndex)/2)+sfx_First
+sfx_AB:			equ ((ptr_sndAB-SoundIndex)/2)+sfx_First
+sfx_AC:			equ ((ptr_sndAC-SoundIndex)/2)+sfx_First
+sfx_AD:			equ ((ptr_sndAD-SoundIndex)/2)+sfx_First
+sfx_AE:			equ ((ptr_sndAE-SoundIndex)/2)+sfx_First
+sfx_AF:			equ ((ptr_sndAF-SoundIndex)/2)+sfx_First
+sfx_Last:		equ ((ptr_sndend-SoundIndex)/2)+sfx_First
 
 ; Special sound effects
-spec_First:	equ $D0
-spec_Jump:	equ ((ptr_sndD0-SpecSoundIndex)/2)+spec_First
-spec_Cash:	equ ((ptr_sndD1-SpecSoundIndex)/2)+spec_First
-spec_Bomb:	equ ((ptr_sndD2-SpecSoundIndex)/2)+spec_First
-spec_Last:	equ ((ptr_sndend-SpecSoundIndex)/2)+spec_First
+spec_First:		equ $D0
+spec_Jump:		equ ((ptr_sndD0-SpecSoundIndex)/2)+spec_First
+spec_Cash:		equ ((ptr_sndD1-SpecSoundIndex)/2)+spec_First
+spec_Bomb:		equ ((ptr_sndD2-SpecSoundIndex)/2)+spec_First
+spec_Last:		equ ((ptr_sndend-SpecSoundIndex)/2)+spec_First
 
-flg_First:	equ $E0
-flg_FadeOut:	equ ((ptr_flgE0-CmdPtrTable)/2)+flg_First
-flg_Stop:	equ ((ptr_flgE1-CmdPtrTable)/2)+flg_First
-flg_StopPSG:	equ ((ptr_flgE2-CmdPtrTable)/2)+flg_First
-flg_FadeIn:	equ ((ptr_flgE3-CmdPtrTable)/2)+flg_First
-flg_Last:	equ ((ptr_flgend-CmdPtrTable)/2)+flg_First
+flg_First:		equ $E0
+flg_FadeOut:		equ ((ptr_flgE0-CmdPtrTable)/2)+flg_First
+flg_Stop:		equ ((ptr_flgE1-CmdPtrTable)/2)+flg_First
+flg_StopPSG:		equ ((ptr_flgE2-CmdPtrTable)/2)+flg_First
+flg_FadeIn:		equ ((ptr_flgE3-CmdPtrTable)/2)+flg_First
+flg_Last:		equ ((ptr_flgend-CmdPtrTable)/2)+flg_First
+
+; Tile flags (replaces the old "make_art_tile" function)
+Tile_Prio:		equ	1<<15
+Tile_XFlip:		equ	1<<11
+Tile_YFlip:		equ	1<<12
+Tile_Pal1:		equ	0<<13
+Tile_Pal2:		equ	1<<13
+Tile_Pal3:		equ	2<<13
+Tile_Pal4:		equ	3<<13
 
 ; VRAM ArtTile definitions
 ; Multiply by $20 (tile_size) to get the actual location in VRAM
 
 ; General Level Art
-ArtTile_Level:				equ $000
+ArtTile_Level:			equ $000
 ArtTile_Spikes_Horizontal:	equ $3BF
 ArtTile_Spikes_Vertical:	equ $3F7
-ArtTile_Spring:				equ $407
-ArtTile_HUD:				equ $500
-ArtTile_Player:				equ $69C
-ArtTile_Player_Arm:			equ $6B5
+ArtTile_Spring:			equ $407
+ArtTile_HUD:			equ $500
+ArtTile_Player:			equ $69C
+ArtTile_Player_Arm:		equ $6B5
 
 ; Field Art
 ArtTile_Electric_Field:		equ $048

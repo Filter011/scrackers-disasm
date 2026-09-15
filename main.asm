@@ -233,7 +233,7 @@ VDPInitValues:
 		dc.b 4					; 8004
 		dc.b $14				; 8114 Display Value
 		dc.b vram_fg>>10			; 8230 FG Scroll
-		dc.b vram_window_sega>>10		; 833C Window
+		dc.b vram_win_sega>>10			; 833C Window
 		dc.b vram_bg>>13			; 8407 BG Scroll
 		dc.b vram_sprtbl_icd>>9			; 856C Sprite Table
 		dc.b 0					; 8600
@@ -432,7 +432,7 @@ InitialVDPSetupArray:
 		dc.w $8004
 		dc.w $8104				; Display mode
 		dc.w $8200+vram_fg>>10			; FG Scroll
-		dc.w $8300+vram_window>>10		; Window
+		dc.w $8300+vram_win>>10			; Window
 		dc.w $8400+vram_bg>>13			; BG Scroll
 		dc.w $8500+vram_sprtbl>>9		; Sprite Table
 		dc.w $8600
@@ -4247,7 +4247,7 @@ SegaScreen:
 SegaScreen_VDPSettings:
 		dc.w $8200+vram_fg>>10			; plane a:
 		dc.w $8400+vram_bg>>13			; plane b:
-		dc.w $8300+vram_window_sega>>10		; window table:
+		dc.w $8300+vram_win_sega>>10		; window table:
 		dc.w $8500+vram_sprtbl_sega>>9		; sprite table: B800
 		dc.w $8D00+vram_hscroll_sega>>10	; horizontal scroll table: BC00
 		dc.w $8B00				; full scroll horizontally/vertically, external interrupt disabled
@@ -5440,7 +5440,7 @@ TitleLoad:
 TitleScreen_VDPSettings:
 		dc.w $8200+vram_fg>>10
 		dc.w $8400+vram_bg>>13
-		dc.w $8300+vram_window_sega>>10
+		dc.w $8300+vram_win_sega>>10
 		dc.w $8500+vram_sprtbl_title>>9
 		dc.w $8D00+vram_hscroll_title>>10
 		dc.w $8B00
@@ -5683,7 +5683,7 @@ PAL_PrimaryColours_Field:
 
 Fields_VDPSettings:
 		dc.w $8200+vram_fg>>10
-		dc.w $8300+vram_window_field>>10
+		dc.w $8300+vram_win_field>>10
 		dc.w $8400+vram_bg>>13
 		dc.w $8500+vram_sprtbl_field>>9
 		dc.w $8D00+vram_hscroll_field>>10
@@ -5946,7 +5946,7 @@ Load_Field_Players:
 		move.w	#2,obj.Pointer(a0)		; Load Sonic Object Pointer?
 		move.w	#$70,obj.Xpos(a0)		; Set starting X position
 		move.w	#$70,obj.Ypos(a0)		; Set starting Y position
-		move.w	#make_art_tile($000,0,FALSE,FALSE,TRUE),obj.VRAM(a0)
+		move.w	#$000|Tile_Prio,obj.VRAM(a0)
 		move.w	a0,(word_D862).w
 ; loc_81CC:
 Load_Tails:
@@ -5957,7 +5957,7 @@ Load_Tails:
 		move.w	#$802,obj.Pointer(a0)		; Load Tails Object Pointer?
 		move.w	#$B0,obj.Xpos(a0)		; Set starting X position
 		move.w	#$70,obj.Ypos(a0)		; Set starting Y position
-		move.w	#make_art_tile($000,0,FALSE,FALSE,TRUE),obj.VRAM(a0)
+		move.w	#$000|Tile_Prio,obj.VRAM(a0)
 		move.w	a0,(word_D864).w
 
 locret_81F6:
@@ -6567,10 +6567,10 @@ Levels:
 		move.w	(timeofday).w,d0
 		andi.w	#3,d0				; limit to 4
 		addi.w	#bgm_Walkin,d0			; add $82 per song (starts at bgm_Walkin)
-							; morning = bgm_Walkin
-							; afternoon = bgm_HyperHyper
-							; evening = bgm_EveningStar
-							; night = bgm_Moonrise
+		; morning = bgm_Walkin
+		; afternoon = bgm_HyperHyper
+		; evening = bgm_EveningStar
+		; night = bgm_Moonrise
 
 loc_88C2:
 		jsr	(QueueSound).l
@@ -6628,7 +6628,7 @@ PAL_PrimaryColours:
 
 Level_VDPSettings:
 		dc.w $8200+vram_fg>>10
-		dc.w $8300+vram_window_field>>10
+		dc.w $8300+vram_win_field>>10
 		dc.w $8400+vram_bg>>13
 		dc.w $8500+vram_sprtbl>>9
 		dc.w $8D00+vram_hscroll_lvl>>10
@@ -14593,7 +14593,7 @@ Spring_Right_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D2D6
 		move.l	#Map_SpringLR,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#8,$22(a6)
 		move.b	#$10,$23(a6)
@@ -14670,7 +14670,7 @@ Spring_Left_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D3C2
 		move.l	#Map_SpringLR,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#8,$22(a6)
 		move.b	#$10,$23(a6)
@@ -14749,7 +14749,7 @@ Spring_Up_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D4B2
 		move.l	#Map_SpringUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#8,$23(a6)
@@ -14828,7 +14828,7 @@ Spring_Down_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D5A2
 		move.l	#Map_SpringUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#8,$23(a6)
@@ -14904,7 +14904,7 @@ Spring_Diagonal_Up_Right_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D68E
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -14991,7 +14991,7 @@ Spring_Diagonal_Up_Left_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D79E
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15080,7 +15080,7 @@ Spring_Diagonal_Down_Right_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D8B2
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15165,7 +15165,7 @@ Spring_Diagonal_Down_Left_Red:
 		bclr	d0,$28(a6)
 		beq.s	loc_D9BE
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,0,TRUE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_XFlip|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15252,7 +15252,7 @@ Spring_Right_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DACE
 		move.l	#Map_SpringLR,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#8,$22(a6)
 		move.b	#$10,$23(a6)
@@ -15330,7 +15330,7 @@ Spring_Left_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DBBA
 		move.l	#Map_SpringLR,obj.Map(a6)	; mappings to load for object
-		move.w	#make_art_tile(ArtTile_Spring,1,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#8,$22(a6)
 		move.b	#$10,$23(a6)
@@ -15409,7 +15409,7 @@ Spring_Up_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DCAA
 		move.l	#Map_SpringUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#8,$23(a6)
@@ -15488,7 +15488,7 @@ Spring_Down_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DD9A
 		move.l	#Map_SpringUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#8,$23(a6)
@@ -15565,7 +15565,7 @@ Spring_Diagonal_Up_Right_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DE86
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15652,7 +15652,7 @@ Spring_Diagonal_Up_Left_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_DF96
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15741,7 +15741,7 @@ Spring_Diagonal_Down_Right_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_E0AA
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15826,7 +15826,7 @@ Spring_Diagonal_Down_Left_Yellow:
 		bclr	d0,$28(a6)
 		beq.s	loc_E1B6
 		move.l	#Map_SpringAngUp,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spring,1,TRUE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spring|Tile_Pal2|Tile_XFlip|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -15983,7 +15983,7 @@ loc_E32C:
 Scattering_Rings_Mappings:
 ;	mappings 1
 		dc.b 5,$F8
-		dc.w make_art_tile($5F0,1,FALSE,FALSE,FALSE)
+		dc.w $5F0|Tile_Pal2
 		dc.b $F8,$FF
 		even
 
@@ -15991,7 +15991,7 @@ Scattering_Rings_Mappings:
 
 ;	mappings 2
 		dc.b 5,$F8
-		dc.w make_art_tile($5F4,1,FALSE,FALSE,FALSE)
+		dc.w $5F4|Tile_Pal2
 		dc.b $F8,$FF
 		even
 
@@ -15999,7 +15999,7 @@ Scattering_Rings_Mappings:
 
 ;	mappings 3
 		dc.b 1,$F8
-		dc.w make_art_tile($5B4,1,FALSE,FALSE,FALSE)
+		dc.w $5B4|Tile_Pal2
 		dc.b $FC,$FF
 		even
 
@@ -16007,7 +16007,7 @@ Scattering_Rings_Mappings:
 
 ;	mappings 4
 		dc.b 5,$F8
-		dc.w make_art_tile($5F4,1,TRUE,FALSE,FALSE)
+		dc.w $5F4|Tile_Pal2|Tile_XFlip
 		dc.b $F8,$FF
 		even
 ; ---------------------------------------------------------------------------
@@ -16032,7 +16032,7 @@ Path_Swapper:
 
 word_E376:
 		dc.b $F,$F0
-		dc.w make_art_tile($001,0,FALSE,FALSE,TRUE)
+		dc.w $001|Tile_Prio
 		dc.b $F0,$FF
 		even
 ; ---------------------------------------------------------------------------
@@ -16267,7 +16267,7 @@ Spikes_Up:
 		bclr	d0,$28(a6)
 		beq.s	loc_E526
 		move.l	#Map_SpikesUpLrg,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#$10,$23(a6)
@@ -16328,7 +16328,7 @@ Spikes_Down:
 		bclr	d0,$28(a6)
 		beq.s	loc_E5CE
 		move.l	#Map_SpikesUpLrg,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#$10,$23(a6)
@@ -16389,7 +16389,7 @@ Spikes_Right:
 		bclr	d0,$28(a6)
 		beq.s	loc_E676
 		move.l	#Map_SpikesLR,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#$10,$23(a6)
@@ -16450,7 +16450,7 @@ Spikes_Left:
 		bclr	d0,$28(a6)
 		beq.s	loc_E71E
 		move.l	#Map_SpikesLR,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$10,$22(a6)
 		move.b	#$10,$23(a6)
@@ -16511,7 +16511,7 @@ Spikes_Diagonal_Up_Right:
 		bclr	d0,$28(a6)
 		beq.s	loc_E7C6
 		move.l	#Map_SpikesAng,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,TRUE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2|Tile_XFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -16572,7 +16572,7 @@ Spikes_Diagonal_Up_Left:
 		bclr	d0,$28(a6)
 		beq.s	loc_E86E
 		move.l	#Map_SpikesAng,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,FALSE,FALSE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -16633,7 +16633,7 @@ Spikes_Diagonal_Down_Right:
 		bclr	d0,$28(a6)
 		beq.s	loc_E916
 		move.l	#Map_SpikesAng,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,TRUE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2|Tile_XFlip|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
@@ -16694,7 +16694,7 @@ Spikes_Diagonal_Down_Left:
 		bclr	d0,$28(a6)
 		beq.s	loc_E9BE
 		move.l	#Map_SpikesAng,obj.Map(a6)
-		move.w	#make_art_tile(ArtTile_Spikes_Horizontal,1,FALSE,TRUE,FALSE),obj.VRAM(a6)
+		move.w	#ArtTile_Spikes_Horizontal|Tile_Pal2|Tile_YFlip,obj.VRAM(a6)
 		move.w	#$8080,4(a6)
 		move.b	#$C,$22(a6)
 		move.b	#$C,$23(a6)
