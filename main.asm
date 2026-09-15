@@ -8783,7 +8783,7 @@ loc_A1BC:
 ; ---------------------------------------------------------------------------
 
 CharacterTable:
-        dc.l SonicObject				; Load Sonic			; something to do with stopping reflexes
+		dc.l SonicObject			; Load Sonic			; something to do with stopping reflexes
 		dc.l TailsObject			; Load Tails
 		dc.l locret_B414
 		dc.l locret_B416
@@ -10828,7 +10828,7 @@ loc_B4A2:
 ; ---------------------------------------------------------------------------
 
 word_B4CC:
-        dc.w $9C
+		dc.w $9C
 		dc.w $98
 		dc.w $94
 		dc.w $90
@@ -13189,7 +13189,7 @@ loc_C832:
 CharacterDataTable_Levels:
 
 CharacterAniTable_Levels:
-        dc.l ANI_Sonic
+		dc.l ANI_Sonic
 		dc.l ANI_Tails
 		dc.l 0
 		dc.l 0
