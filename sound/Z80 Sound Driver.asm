@@ -99,8 +99,8 @@ zTrack ENDSTRUCT
 		phase $1C00
 zDataStart:
 		ds.b 4					; unused
-zMusicBank:		ds.b 1
-zDACBank:		ds.b 1
+zMusicBank:		ds.b 1				; current music 68K bank
+zDACBank:		ds.b 1				; current DAC 68K bank
 zFadeCounter:		ds.b 1				; fade volume counter
 		ds.b 2					; unused
 
@@ -190,10 +190,6 @@ zBankRegister	=	6000h
 zPSG		=	7F11h
 zROMWindow	=	8000h
 
-z68kBankLimit_Bits	=	6
-
-z68kBankLimit	=	(1>>z68kBankLimit_Bits)-1
-
 zMakeFMFrequency function frequency,roundFloatToInteger(frequency*1024*1024*2/FM_Sample_Rate)
 
 zFMFreqC0	=	zMakeFMFrequency(16.35)
@@ -208,17 +204,17 @@ bankswitch macro
 	; Hardcoded to only support 6-bit bank values.
 	ld	hl,zBankRegister
 	ld	(hl),a
-	rept z68kBankLimit_Bits-1
+	rept 5
 		rra
 		ld	(hl),a
 	endr
 	if OptimiseDriver
-		rept 8-z68kBankLimit_Bits+1
+		rept 3
 			ld	(hl),h
 		endr
 	else
 		xor	a
-		rept 8-z68kBankLimit_Bits+1
+		rept 3
 			ld	(hl),a
 		endr
 	endif
@@ -286,7 +282,7 @@ zmake68kPtr function addr,zROMWindow+(addr&7FFFh)
 
 ; function to turn a 68k address into a bank byte
 ; hardcoded to 6-bit
-zmake68kBank function addr,(((addr&3F8000h)/zROMWindow))&z68kBankLimit
+zmake68kBank function addr,(((addr&3F8000h)/zROMWindow))&3Fh
 
 ; Segment type:	Regular
 
@@ -381,63 +377,63 @@ WriteFMII:	rsttarget
 
 ; ---------------------------------------------------------------------------
 	org 38h
-VInt:	rsttarget
-		di
-		push	af
-		push	iy
-		exx
+VInt:		rsttarget
+		di					; Disable interrupts
+		push	af				; Save af
+		push	iy				; Save iy
+		exx					; Save bc,de,hl
 		call	DoSoundQueue
 		call	UpdateAll
-		ld	a,(zDACIndex)
-		or	a
-		jp	z,loc_AB
+		ld	a,(zDACIndex)			; a = DAC index/flag
+		or	a				; Is DAC channel being used?
+		jp	z,loc_AB			; Exit if not
 		jp	m,loc_95
-		ld	a,2Bh
-		ld	c,80h
+		ld	a,2Bh				; DAC enable/disable register
+		ld	c,80h				; Value to enable DAC
 	if OptimiseDriver
-		rst	WriteFMI
+		rst	WriteFMI			; Send YM2612 command
 	else
-		call	WriteFMI
+		call	WriteFMI			; Send YM2612 command
 	endif
-		ld	hl,zDACIndex
-		ld	a,(hl)
+		ld	hl,zDACIndex			; hl = pointer to DAC index/flag
+		ld	a,(hl)				; a = DAC index
 		dec	a
-		set	7,(hl)
+		set	7,(hl)				; Set bit 7 to indicate that DAC sample is being played
 		ld	hl,DAC_Index
 		rst	ReadPtrTable
-		ld	c,80h
-		ld	a,(hl)
-		ld	(zPlayDigitalAudio.sample1_rate+1),a
-		ld	(zPlayDigitalAudio.sample2_rate+1),a
+		ld	c,80h				; c is an accumulator below; this initializes it to 80h
+		ld	a,(hl)				; a = DAC rate
+		ld	(zPlayDigitalAudio.sample1_rate+1),a	; Store into following instruction (self-modifying code)
+		ld	(zPlayDigitalAudio.sample2_rate+1),a	; Store into following instruction (self-modifying code)
 		inc	hl
-		ld	a,(hl)				; get DAC bank location
+		ld	a,(hl)				; Get DAC bank location
 		ld	(zDACBank), a
 		inc	hl
-		ld	e,(hl)				; get low byte of DAC length
+		ld	e,(hl)				; Get low byte of DAC length
 		inc	hl
-		ld	d,(hl)				; get high byte of DAC length
+		ld	d,(hl)				; Get high byte of DAC length
 		inc	hl
-		ld	a,(hl)				; get low byte of DAC 68K pointer
+		ld	a,(hl)				; Get low byte of DAC 68K pointer
 		inc	hl
-		ld	h,(hl)				; get high byte of DAC 68K pointer
-		ld	l,a				; load contents of a into l (hl is now a full 16-bit DAC 68K pointer)
-		exx
-		bankswitchToDAC
-		exx
-		pop	iy
-		pop	af
-		pop	af
+		ld	h,(hl)				; Get high byte of DAC 68K pointer
+		ld	l,a				; Load contents of a into l (hl is now a full 16-bit DAC 68K pointer)
+		exx					; Save bc,de,hl (primarily hl in this case since the bank switch alters it)
+		bankswitchToDAC				; Switch to current DAC sample's bank
+		exx					; Restore bc,de,hl (primarily hl in this case since the bank switch alters it)
+		pop	iy				; Restore iy
+		pop	af				; Restore af
+		pop	af				; Restore af
 		jp	zPlayDigitalAudio.dac_idle_loop
 ; ---------------------------------------------------------------------------
 
 loc_95:
-		bankswitchToDAC
+		bankswitchToDAC				; Switch to current DAC sample's bank
 
 loc_AB:
-		exx
-		pop	iy
-		pop	af
-		ld	b,1
+		exx					; Restore bc,de,hl
+		pop	iy				; Restore iy
+		pop	af				; Restore af
+		ld	b,1				; b = 1
 		ret
 ; ---------------------------------------------------------------------------
 
@@ -452,19 +448,18 @@ InitDriver:
 		jr	nz,.loop
 
 		call	StopAllSound
-		ld	a,zmake68kBank(MusicBank)	; get initial music bank
-		ld	(zMusicBank),a			; store it in memory
-		ld	a,zmake68kBank(DACBank)	; get initial DAC bank
-		ld	(zDACBank),a			; store it in memory
+		ld	a,zmake68kBank(MusicBank)	; Get initial music bank
+		ld	(zMusicBank),a			; Store it in memory
+		ld	a,zmake68kBank(DACBank)		; Get initial DAC bank
+		ld	(zDACBank),a			; Store it in memory
 
 	if FixDriverBugs
-		ld	de,0				; set DAC length to zero
+		ld	de,0				; Set DAC length to zero
 	else
-		; DANGER!
 		; This is bugged, the DAC needs de to be cleared in order to
-		; not continue checking if there is a sample. This leads to
-		; constant crashes on hardware if nothing is played on the
-		; Sega Screen or anywhere that sound isn't being played.
+		; not continue checking if there is a sample length.
+		; This leads to constant crashes on hardware if de has not been set
+		; due to de being initialized as random values.
 	endif
 		bankswitchToDAC
 		ld	iy,DecTable
