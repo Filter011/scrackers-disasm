@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Modified Type 1B Z80 Sound Driver
+; Modified Type 1C Z80 Sound Driver
 ; ---------------------------------------------------------------------------
 ; Original disassembly from ValleyBell's SMPS Research Pack
 ; Full disassembly and documentation by Filter
