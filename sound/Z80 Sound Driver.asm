@@ -333,7 +333,7 @@ WriteFMIIPart:
 	align 8
 WriteFMII:	rsttarget
 		ld	(zYM2612_A1),a
-		ld	a, c
+		ld	a,c
 		ld	(zYM2612_D1),a
 		ret
 ; End of function WriteFMII
@@ -407,7 +407,7 @@ VInt:		rsttarget
 		ld	(zPlayDigitalAudio.sample2_rate+1),a	; Store into following instruction (self-modifying code)
 		inc	hl
 		ld	a,(hl)				; Get DAC bank location
-		ld	(zDACBank), a
+		ld	(zDACBank),a
 		inc	hl
 		ld	e,(hl)				; Get low byte of DAC length
 		inc	hl
@@ -684,7 +684,7 @@ loc_20B:
 		call	DoPanAnimation
 		ex	af,af'
 
-		bit	Alternate_freq, (ix+zTrack.PlaybackControl)
+		bit	Alternate_freq,(ix+zTrack.PlaybackControl)
 		jp	nz,DoRawFreqMode
 		or	a
 		jp	p,SetDuration
@@ -1728,28 +1728,28 @@ GetSFXChnPtrs:
 loc_6E3:
 	if OptimiseDriver
 		call	zSilencePSGChannel		; Silence channel at ix
-		ld	a, c				; a = channel identifier
+		ld	a,c				; a = channel identifier
 		; Shift high 3 bits to low bits so that we can convert it to a table index
 		rlca
 		rlca
 		rlca
 		and	7
-		add	a, 3				; Compensate for subtraction below
+		add	a,3				; Compensate for subtraction below
 	else
-		ld	a, 1Fh				; a = 1Fh (redundant, as this is the first instruction of the function)
+		ld	a,1Fh				; a = 1Fh (redundant, as this is the first instruction of the function)
 		call	zSilencePSGChannel		; Silence channel at ix
 		; The next two lines are here because zSilencePSGChannel does not do
 		; its job correctly. See the note there.
-		ld	a, 0FFh				; Command to silence Noise channel
-		ld	(zPSG), a			; Silence it
-		ld	a, c				; a = channel identifier
+		ld	a,0FFh				; Command to silence Noise channel
+		ld	(zPSG),a			; Silence it
+		ld	a,c				; a = channel identifier
 		; The next 5 shifts are so that we can convert it to a table index
 		srl	a
 		srl	a
 		srl	a
 		srl	a
 		srl	a
-		add	a, 2				; Compensate for subtraction below
+		add	a,2				; Compensate for subtraction below
 	endif
 
 loc_6FA:
